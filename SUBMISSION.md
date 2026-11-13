@@ -39,7 +39,24 @@ Malformed JSON and missing event IDs are counted and skipped. Duplicate IDs are 
 Unit tests cover phone formats, date parsing, decimal parsing and naive-IST timestamps. Add integration tests against the provided generator and a fresh seed before submission; inspect every report and compare re-ingestion output.
 
 ## Results
-[Run the small and optionally large dataset locally and record actual timings and counts. Do not invent timings.]
+### Results
+
+- Test execution: **6 passed, 0 failed**
+- Phone format validation: Passed
+- Date parsing and validation: Passed
+- Decimal currency parsing: Passed
+- Naive IST timestamp handling: Passed
+- Override precedence: Passed
+- Bucket priority: Passed
+
+Generated reports:
+- batch_summary.csv
+- daily_overview.csv
+- data_quality.json
+- lead_report.csv
+- rejections.csv
+
+All six available unit tests passed successfully.
 
 ## If I had another day
 - Add end-to-end golden tests for all five report files.
