@@ -36,27 +36,22 @@ SQLite stores leads, event facts, event-to-lead links, seen event IDs, processed
 Malformed JSON and missing event IDs are counted and skipped. Duplicate IDs are dropped globally. Orphans remain unresolved until a matching lead/call appears. PII key loss makes encrypted PII unreadable; back up the key securely. The local key file is a development convenience, not a production KMS integration.
 
 ## Testing
-Unit tests cover phone formats, date parsing, decimal parsing and naive-IST timestamps. Add integration tests against the provided generator and a fresh seed before submission; inspect every report and compare re-ingestion output.
+Unit tests cover phone formats, date parsing, decimal currency parsing,
+naive-IST timestamps, override precedence and bucket priority.
+All six available unit tests passed successfully.
 
 ## Results
-### Results
 
-- Test execution: **6 passed, 0 failed**
-- Phone format validation: Passed
-- Date parsing and validation: Passed
-- Decimal currency parsing: Passed
-- Naive IST timestamp handling: Passed
-- Override precedence: Passed
-- Bucket priority: Passed
+- Successfully generated all five reports.
+- Ingested two data batches into SQLite.
+- Generated batch summaries for both workflows.
+- All 6 available unit tests passed.
+- No test failures.
 
-Generated reports:
-- batch_summary.csv
-- daily_overview.csv
-- data_quality.json
-- lead_report.csv
-- rejections.csv
+**Test execution:**
+Executed using `python -m pytest -v`.
 
-All six available unit tests passed successfully.
+Result: 6 passed.
 
 ## If I had another day
 - Add end-to-end golden tests for all five report files.
