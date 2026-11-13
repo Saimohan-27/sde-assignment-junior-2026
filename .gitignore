@@ -1,11 +1,10 @@
-__pycache__/
-*.pyc
 .venv/
+__pycache__/
+.pytest_cache/
+*.py[cod]
+*.sqlite3*
+.pii.key
 .env
-*.db
-*.sqlite*
+reports/
 data/
 data_large/
-reports/
-final_state.csv
-.pytest_cache/

@@ -1,20 +1,16 @@
 # AI Usage Disclosure
 
-AI tools are allowed. We want to know **how** you used them, because using them well is a
-skill. Honest answers are never held against you. Discovering undisclosed use is.
-
 ## Tools used
-_e.g. Claude, Cursor, Copilot, ChatGPT, or "none"_
+ChatGPT.
 
 ## What I used them for
-_e.g. "scaffolded the FastAPI receiver", "explained Temporal activity retries", "wrote the first
-draft of the phone-normalisation tests"_
+Discussing the architecture, interpreting the assignment rules, drafting the initial implementation structure, and proposing edge-case tests.
 
 ## What I wrote or decided myself
-_The parts that are your own thinking: design, data model, edge-case handling..._
+[Describe the code you personally reviewed, changed, tested, and the design decisions you can explain. Be accurate.]
 
 ## Where the AI was wrong or unhelpful
-_At least one example of output you rejected or had to fix, and how you noticed._
+The initial implementation is a draft and may not cover every integration edge case. I will record specific issues found during local testing here, including the correction made.
 
 ## How I verified AI-generated code
-_Tests, manual runs, reading it line by line..._
+[Record the exact commands run, tests passed, seed used, and any manual checks. Do not claim checks that were not performed.]

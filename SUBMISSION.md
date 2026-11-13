@@ -1,39 +1,48 @@
 # Submission
 
-> Replace everything in _italics_. Be concise: bullet points are fine. We read every word.
-
 ## Candidate
-- **Name:** _
-- **Assignment chosen:** _A (Data) / B (Workflow)_
-- **Time spent (honest estimate):** _e.g. 7h_
+- **Name:** [Your name]
+- **Assignment chosen:** A (Data)
+- **Time spent:** [Fill in honestly]
 
 ## How to run
 ```bash
-# exact commands from a clean clone: setup, run, test
+python -m venv .venv
+# Windows: .venv\\Scripts\\activate
+# macOS/Linux: source .venv/bin/activate
+pip install -r requirements.txt
+python assignment-a-data/tools/generate_data.py --seed 42 --scale small --out data
+python -m solution.pipeline ingest data/drop_1
+python -m solution.pipeline ingest data/drop_2
+python -m solution.pipeline report --out reports
+pytest -q
 ```
 
+Run commands from repository root. The first run creates `.pii.key`; preserve it across runs and never commit it. Alternatively set `PII_ENCRYPTION_KEY` to a stable Fernet key.
+
 ## Design
-_Your architecture in a few paragraphs, plus a diagram if it helps. For A: your database schema
-and why. For B: your lead state machine (ASCII or Mermaid) and how you guarantee at-most-once
-dialling._
+SQLite stores leads, event facts, event-to-lead links, seen event IDs, processed-file fingerprints, rejections, and quality counters. Lead identity is `(workflow_id, HMAC-SHA256(phone))`. Canonical phone and customer name are encrypted with Fernet; the keyed HMAC supports equality matching without storing plaintext phone. Events omit raw phone and retain only the keyed hash. Event facts are append-only; `event_links` is separate so initially orphaned events can be linked when a lead arrives later.
 
 ## Decisions & assumptions
-_Every place where you made a call the spec didn't make for you, and why._
-
 | Decision | Why | Alternative considered |
 |---|---|---|
-| _ | _ | _ |
+| One SQLite DB and local Fernet key file | Reproducible local setup with encrypted PII | PostgreSQL/KMS |
+| Event rows are immutable; links are separate | Late-arriving leads can resolve orphan links without editing event facts | Updating event rows |
+| A valid event ID is reserved even for unknown dispositions | Re-delivery must not repeatedly count the same unknown event | Ignore event ID entirely |
+| File path plus content hash marks completed input | Safe idempotent re-runs; changed file at same path is reprocessed | Drop-level manifest |
+| Date values are stored as ISO dates; timestamps converted to IST | Stable comparisons and report grouping | Keep original formats |
 
 ## Failure modes considered
-_What can go wrong and how your solution handles it (bad input, re-runs, crashes, timeouts,
-duplicates...). Also list anything you know is **not** handled._
+Malformed JSON and missing event IDs are counted and skipped. Duplicate IDs are dropped globally. Orphans remain unresolved until a matching lead/call appears. PII key loss makes encrypted PII unreadable; back up the key securely. The local key file is a development convenience, not a production KMS integration.
 
 ## Testing
-_What you tested, what you didn't, and why._
+Unit tests cover phone formats, date parsing, decimal parsing and naive-IST timestamps. Add integration tests against the provided generator and a fresh seed before submission; inspect every report and compare re-ingestion output.
 
 ## Results
-_For A: timings, and anything surprising in the data. For B: your `/admin/report` summary from
-a full run, ideally one that includes a `kill -9`._
+[Run the small and optionally large dataset locally and record actual timings and counts. Do not invent timings.]
 
 ## If I had another day
-_What you'd do next, in priority order._
+- Add end-to-end golden tests for all five report files.
+- Move key management to a KMS or secrets manager.
+- Add transactional per-file ingestion and recovery tests for process termination.
+- Profile large-scale reporting and push aggregations into SQL where beneficial.
