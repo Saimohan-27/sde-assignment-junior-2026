@@ -175,13 +175,16 @@ def ingest_leads(store: Store, drop: Path, schemas):
                     values={}; warnings=0; reason=None
                     for field in schema['fields']:
                         name=field['name']; rawval=row.get(mapping.get(name,''),'') if name in mapping else ''
-                        val,bad=validate_value(rawval,field)
+                        val,bad=validate_value(rawval,field)                       
+                        if field['type'] == 'phone' and (rawval or '').strip() and bad:
+                            reason = 'invalid_phone'
+                            break                      
                         if field.get('required') and val is None:
-                            reason=f'missing_required:{name}'; break
-                        if field['type']=='phone' and (rawval or '').strip() and bad:
-                            reason='invalid_phone'; break
-                        if bad: warnings+=1
-                        values[name]=val
+                            reason = f'missing_required:{name}'
+                            break                        
+                        if bad:
+                            warnings += 1
+                        values[name] = val
                     if reason:
                         store.inc('lead_rows_rejected'); store.inc('reject:'+reason)
                         store.db.execute('INSERT OR REPLACE INTO rejections VALUES(?,?,?,?)',(wf,file.stem,row_no,reason)); continue
